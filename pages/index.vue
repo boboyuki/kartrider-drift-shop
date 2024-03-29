@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <NuxtLayout />
-  </div>
+  <NuxtLayout>
+    <p> TODO !!!!</p>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
