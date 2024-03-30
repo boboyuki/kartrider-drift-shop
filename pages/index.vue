@@ -1,13 +1,9 @@
 <template>
   <NuxtLayout>
-    <p> TODO !!!!</p>
+    <p>TODO !!!!</p>
   </NuxtLayout>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts"></script>
 
-</script>
-
-<style scoped>
-
-</style>
+<style scoped></style>
