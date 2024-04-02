@@ -15,6 +15,5 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true
   },
-  devtools: { enabled: true },
-  css: ['primeicons/primeicons.css']
+  devtools: { enabled: true }
 })
