@@ -2,40 +2,48 @@
   <header
     class="bg-black text-white min-h-20 p-5 flex flex-row justify-between items-center"
   >
-    <div>
-      <h1>跑跑飄移商城</h1>
-    </div>
-    <div>
-      <Popover>
-        <PopoverTrigger>
-          <Avatar size="sm">
-            <AvatarImage v-if="userImage" :src="userImage" alt="@radix-vue" />
-            <AvatarFallback>
-              <span class="pi pi-user"></span>
-            </AvatarFallback>
-          </Avatar>
-        </PopoverTrigger>
-        <PopoverContent>
-          <ul>
-            <li>🇹🇼 繁體中文</li>
-            <li>🇨🇳 简体中文</li>
-            <li>🇺🇸 English</li>
-          </ul>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <h1>跑跑飄移商城</h1>
+    <DropdownMenu v-model:open="toggleState">
+      <DropdownMenuTrigger>
+        <Avatar class="w-[35px] h-[35px] bg-slate-400">
+          <AvatarImage v-if="userImage" :src="userImage" alt="@radix-vue" />
+          <AvatarFallback>
+            <Icon icon="mdi:user" width="20px" height="20px" />
+          </AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent class="mr-3">
+        <DropdownMenuItem v-for="option in userOptionList" :key="option.id">
+          {{ option.name }}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   </header>
 </template>
 
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover'
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-const userImage = ref<string | null>('null')
+type UserOption = {
+  id: number
+  name: string
+}
+
+const userImage = ref<string | null>(null)
+const toggleState = ref(false)
+const userOptionList = reactive<UserOption[]>([
+  {
+    id: 1,
+    name: '登入'
+  }
+])
 </script>
 
 <style scoped></style>
