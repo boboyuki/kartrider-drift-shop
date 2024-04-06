@@ -5,10 +5,14 @@
         <Card
           v-for="productCategory in productCategories"
           :key="productCategory.id"
-          class="h-[450px] w-[350px] bg-gray-700 text-slate-300"
+          class="flex flex-col h-[450px] w-[350px] bg-gray-700 text-slate-300 cursor-pointer"
         >
-          <CardContent>
-            <img src="" alt="" srcset="" />
+          <CardContent class="flex flex-grow justify-center items-center">
+            <img
+              :src="productCategory.imgUrl"
+              :alt="productCategory.name"
+              class="inline-block h-[250px] w-100"
+            />
           </CardContent>
           <CardFooter class="flex-col gap-3">
             <CardTitle>{{ productCategory.name }}</CardTitle>
@@ -18,7 +22,7 @@
       </div>
       <div class="flex justify-center items-center p-10 flex-shrink-0 gap-2">
         <Button>查看介紹</Button>
-        <Button>進入介紹</Button>
+        <Button>進入商城</Button>
       </div>
     </section>
   </NuxtLayout>
@@ -30,29 +34,42 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle
 } from '@/components/ui/card'
-const productCategories = ref([
-  {
-    id: 1,
-    name: '卡丁車',
-    description: '極速冒險，卡丁車將帶您飆速贏得冠軍！',
-    imgUrl: ''
-  },
-  {
-    id: 2,
-    name: '道具',
-    description: '挑戰更加刺激，使用我們的道具讓您在遊戲中獲勝無數！',
-    imgUrl: ''
-  },
-  {
-    id: 3,
-    name: '人物',
-    description: '多種的人物選擇供您在遊戲中體驗！',
-    imgUrl: ''
+type ProductCategory = {
+  id: number
+  name: string
+  description: string
+  imgUrl: string
+}
+const supabase = useSupabaseClient()
+const productCategories = ref<ProductCategory[]>([])
+const { data } = await useAsyncData(async () => {
+  const { data } = await supabase.storage
+    .from('kd-shop')
+    .createSignedUrls(['karts/training.png', 'roles/bazzi.png'], 24 * 60 * 60)
+  if (data?.length === 2 && data[0].signedUrl && data[1].signedUrl) {
+    return [
+      {
+        id: 1,
+        name: '卡丁車',
+        description: '極速冒險，卡丁車將帶您飆速贏得冠軍！',
+        imgUrl: data[0].signedUrl
+      },
+      {
+        id: 2,
+        name: '人物',
+        description: '多種的人物選擇供您在遊戲中體驗！',
+        imgUrl: data[1].signedUrl
+      }
+    ]
   }
-])
+})
+onMounted(() => {
+  if (data.value) {
+    productCategories.value = data.value
+  }
+})
 </script>
 
 <style scoped></style>
