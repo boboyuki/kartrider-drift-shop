@@ -14,7 +14,9 @@
       </DropdownMenuTrigger>
       <DropdownMenuContent class="mr-3">
         <DropdownMenuItem v-for="option in userOptionList" :key="option.id">
-          {{ option.name }}
+          <NuxtLink :to="option.link" class="inline-block w-full">
+            {{ option.name }}
+          </NuxtLink>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -34,6 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 type UserOption = {
   id: number
   name: string
+  link: string
 }
 
 const userImage = ref<string | null>(null)
@@ -41,7 +44,13 @@ const toggleState = ref(false)
 const userOptionList = reactive<UserOption[]>([
   {
     id: 1,
-    name: '登入'
+    name: '登入',
+    link: '/signin'
+  },
+  {
+    id: 2,
+    name: '註冊',
+    link: '/signup'
   }
 ])
 </script>

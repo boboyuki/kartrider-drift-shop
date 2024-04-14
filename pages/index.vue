@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout>
-    <section class="bg-zinc-900 h-full flex-col">
+    <section class="h-full flex-col">
       <div class="flex justify-around items-center py-10 px-5">
         <Card
           v-for="productCategory in productCategories"
@@ -8,10 +8,15 @@
           class="flex flex-col h-[450px] w-[350px] bg-gray-700 text-slate-300 cursor-pointer"
         >
           <CardContent class="flex flex-grow justify-center items-center">
+            <Skeleton
+              v-if="pending"
+              class="h-[250px] w-full inline-block"
+            ></Skeleton>
             <img
+              v-else
               :src="productCategory.imgUrl"
               :alt="productCategory.name"
-              class="inline-block h-[250px] w-100"
+              class="inline-block h-[250px]"
             />
           </CardContent>
           <CardFooter class="flex-col gap-3">
@@ -29,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Card,
   CardContent,
@@ -43,8 +49,8 @@ type ProductCategory = {
   imgUrl: string
 }
 const supabase = useSupabaseClient()
-const productCategories = ref<ProductCategory[]>([])
-const { data } = await useAsyncData(async () => {
+const productCategories = reactive<ProductCategory[]>([])
+const { data, pending } = await useAsyncData(async () => {
   const { data } = await supabase.storage
     .from('kd-shop')
     .createSignedUrls(['karts/training.png', 'roles/bazzi.png'], 24 * 60 * 60)
@@ -65,11 +71,9 @@ const { data } = await useAsyncData(async () => {
     ]
   }
 })
-onMounted(() => {
-  if (data.value) {
-    productCategories.value = data.value
-  }
-})
+if (data?.value && data?.value?.length >= 0) {
+  productCategories.push(...data.value)
+}
 </script>
 
 <style scoped></style>
