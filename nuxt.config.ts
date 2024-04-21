@@ -4,7 +4,9 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     'shadcn-nuxt',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   shadcn: {
     /**
@@ -21,6 +23,9 @@ export default defineNuxtConfig({
     typeCheck: true
   },
   devtools: { enabled: true },
+  imports: {
+    dirs: ['stores']
+  },
   supabase: {
     url: process.env.SUPABASE_API_DOMAIN,
     key: process.env.SUPABASE_API_KEY,
