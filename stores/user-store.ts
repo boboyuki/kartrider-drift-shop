@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-const supabase = useSupabaseClient()
+import { supabase } from '@/lib/supabase'
 
 type LoginResponse = {
   isSuccess: boolean

@@ -30,5 +30,9 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_API_DOMAIN,
     key: process.env.SUPABASE_API_KEY,
     redirect: false
+  },
+  runtimeConfig: {
+    url: process.env.SUPABASE_API_DOMAIN,
+    key: process.env.SUPABASE_API_KEY
   }
 })

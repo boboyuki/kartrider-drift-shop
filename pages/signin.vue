@@ -49,6 +49,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
 const { toast } = useToast()
+const userStore = useUserStore()
 const { useField, handleSubmit } = useForm({
   defaultValues: {
     email: '',
@@ -68,10 +69,17 @@ const password = useField('password', {
 
 const onSubmit = handleSubmit(async (values) => {
   if (values.email && values.password) {
-    const { error } = await userStore.login({
-      email: values.email || '',
-      password: values.password || ''
-    })
+    const {
+      data,
+      pending,
+      error: nuxtError
+    } = await useAsyncData(() =>
+      userStore.login({
+        email: values.email || '',
+        password: values.password || ''
+      })
+    )
+    const error = nuxtError.value || data.value?.error
     if (error) {
       toast({
         title: '登入失敗',
@@ -80,11 +88,6 @@ const onSubmit = handleSubmit(async (values) => {
       })
     }
   }
-})
-const userStore = useUserStore()
-const loginData = reactive({
-  email: '',
-  password: ''
 })
 </script>
 

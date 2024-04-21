@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout>
-    <section class="h-full flex-col">
-      <div class="flex justify-around items-center py-10 px-5">
+    <section class="h-full flex flex-col justify-center items-center">
+      <div class="w-full flex justify-around items-center py-10 px-5">
         <Card
           v-for="productCategory in productCategories"
           :key="productCategory.id"
