@@ -1,49 +1,53 @@
 import { defineStore } from 'pinia'
 
-import { supabase } from '@/lib/supabase'
+type LoginParams = {
+  email: string
+  password: string
+}
 
 type LoginResponse = {
   isSuccess: boolean
   error?: Error
 }
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
+export const useUserStore = defineStore('user', () => {
+  const supabase = useSupabaseClient()
+  const userData = reactive({
     userName: '',
     userSession: ''
-  }),
-  actions: {
-    setUserName(name: string) {
-      this.userName = name
-    },
-    async login({
-      email,
-      password
-    }: {
-      email: string
-      password: string
-    }): Promise<LoginResponse> {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
-        if (error) {
-          throw error
-        }
-        this.userName = data?.user?.email || ''
-        this.userSession = data.session?.access_token || ''
-        return { isSuccess: true }
-      } catch (error) {
-        if (error instanceof Error) {
-          return { isSuccess: false, error }
-        } else {
-          return { isSuccess: false, error: new Error(String(error)) }
-        }
+  })
+
+  const setUserName = (name: string) => {
+    userData.userName = name
+  }
+
+  const login = async ({
+    email,
+    password
+  }: LoginParams): Promise<LoginResponse> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      if (error) {
+        throw error
+      }
+      userData.userName = data?.user?.email || ''
+      userData.userSession = data.session?.access_token || ''
+      return { isSuccess: true }
+    } catch (error) {
+      if (error instanceof Error) {
+        return { isSuccess: false, error }
+      } else {
+        return { isSuccess: false, error: new Error(String(error)) }
       }
     }
-  },
-  persist: {
-    key: 'user-sessions'
+  }
+
+  return {
+    userData,
+    setUserName,
+    login
   }
 })

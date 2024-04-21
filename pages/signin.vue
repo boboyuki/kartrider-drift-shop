@@ -10,16 +10,28 @@
             <div class="grid items-center w-full gap-4">
               <div class="flex flex-col space-y-1.5">
                 <Label for="name" class="mb-2">帳號</Label>
-                <Input id="name" v-model="email.value" placeholder="帳號" />
+                <Input
+                  id="name"
+                  v-model="email"
+                  v-bind="emailAttrs"
+                  placeholder="帳號"
+                />
+                <p v-if="errors.email" class="text-red-400">
+                  {{ errors.email }}
+                </p>
               </div>
               <div class="flex flex-col space-y-1.5">
                 <Label for="password" class="mb-2">密碼</Label>
                 <Input
                   id="password"
-                  v-model="password.value"
+                  v-model="password"
+                  v-bind="passwordAttrs"
                   type="password"
                   placeholder="密碼"
                 />
+                <p v-if="errors.password" class="text-red-400">
+                  {{ errors.password }}
+                </p>
               </div>
             </div>
           </form>
@@ -36,7 +48,9 @@
 </template>
 
 <script setup lang="ts">
-import { useForm } from 'vue-hooks-form'
+import { useForm } from 'vee-validate'
+import zod from 'zod'
+import { toTypedSchema } from '@vee-validate/zod'
 import {
   Card,
   CardContent,
@@ -48,45 +62,36 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
-const { toast } = useToast()
-const userStore = useUserStore()
-const { useField, handleSubmit } = useForm({
-  defaultValues: {
-    email: '',
-    password: ''
-  }
-})
-const email = useField('email', {
-  rule: { required: true }
-})
-const password = useField('password', {
-  rule: {
-    required: true,
-    min: 6,
-    max: 10
-  }
+const schema = zod.object({
+  email: zod.string().email(),
+  password: zod.string().min(6).max(10)
 })
 
-const onSubmit = handleSubmit(async (values) => {
-  if (values.email && values.password) {
-    const {
-      data,
-      pending,
-      error: nuxtError
-    } = await useAsyncData(() =>
-      userStore.login({
-        email: values.email || '',
-        password: values.password || ''
-      })
-    )
-    const error = nuxtError.value || data.value?.error
-    if (error) {
+const { toast } = useToast()
+const userStore = useUserStore()
+const { errors, defineField, handleSubmit } = useForm({
+  validationSchema: toTypedSchema(schema)
+})
+
+const [email, emailAttrs] = defineField('email')
+const [password, passwordAttrs] = defineField('password')
+
+const onSubmit = handleSubmit(async () => {
+  try {
+    if (email.value && password.value) {
+      await userStore.login({ email: email.value, password: password.value })
       toast({
-        title: '登入失敗',
-        description: error.message,
-        variant: 'destructive'
+        title: '登入成功',
+        description: '歡迎回來',
+        variant: 'default'
       })
     }
+  } catch (error) {
+    toast({
+      title: '登入失敗',
+      description: error instanceof Error ? error.message : String(error),
+      variant: 'destructive'
+    })
   }
 })
 </script>
