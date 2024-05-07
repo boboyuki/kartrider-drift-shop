@@ -21,6 +21,8 @@ export const useUserStore = defineStore('user', () => {
     userData.userName = name
   }
 
+  const initialize = () => {}
+
   const login = async ({
     email,
     password
@@ -45,9 +47,34 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const signup = async ({
+    email,
+    password
+  }: LoginParams): Promise<LoginResponse> => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      })
+      if (error) {
+        throw error
+      }
+      userData.userName = data?.user?.email || ''
+      userData.userSession = data.session?.access_token || ''
+      return { isSuccess: true }
+    } catch (error) {
+      if (error instanceof Error) {
+        return { isSuccess: false, error }
+      } else {
+        return { isSuccess: false, error: new Error(String(error)) }
+      }
+    }
+  }
+
   return {
     userData,
     setUserName,
-    login
+    login,
+    signup
   }
 })
