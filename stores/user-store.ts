@@ -10,6 +10,17 @@ type LoginResponse = {
   error?: Error
 }
 
+type SignUpParams = {
+  email: string
+  password: string
+  name: string
+}
+
+type SignUpResponse = {
+  isSuccess: boolean
+  error?: Error
+}
+
 export const useUserStore = defineStore('user', () => {
   const supabase = useSupabaseClient()
   const userData = reactive({
@@ -49,12 +60,16 @@ export const useUserStore = defineStore('user', () => {
 
   const signup = async ({
     email,
-    password
-  }: LoginParams): Promise<LoginResponse> => {
+    password,
+    name
+  }: SignUpParams): Promise<SignUpResponse> => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: { name }
+        }
       })
       if (error) {
         throw error
