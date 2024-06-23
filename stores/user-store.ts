@@ -23,6 +23,8 @@ type SignUpResponse = {
 
 export const useUserStore = defineStore('user', () => {
   const supabase = useSupabaseClient()
+  const user = useSupabaseUser()
+  const session = useSupabaseSession()
   const userData = reactive({
     userName: '',
     userSession: ''
@@ -32,7 +34,13 @@ export const useUserStore = defineStore('user', () => {
     userData.userName = name
   }
 
-  const initialize = () => {}
+  const initialize = () => {
+    console.log('initialize', user.value, session.value)
+    if (user.value || session.value) {
+      userData.userName = user.value?.email || ''
+      userData.userSession = session?.value?.access_token || ''
+    }
+  }
 
   const login = async ({
     email,
@@ -90,6 +98,7 @@ export const useUserStore = defineStore('user', () => {
     userData,
     setUserName,
     login,
-    signup
+    signup,
+    initialize
   }
 })

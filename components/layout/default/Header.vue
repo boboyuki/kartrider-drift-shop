@@ -33,6 +33,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
+const userStore = useUserStore()
+
 type UserOption = {
   id: number
   name: string
@@ -41,7 +43,7 @@ type UserOption = {
 
 const userImage = ref<string | null>(null)
 const toggleState = ref(false)
-const userOptionList = reactive<UserOption[]>([
+const notSignInMenu = [
   {
     id: 1,
     name: '登入',
@@ -52,7 +54,22 @@ const userOptionList = reactive<UserOption[]>([
     name: '註冊',
     link: '/signup'
   }
-])
+]
+const signInMenu = [
+  {
+    id: 1,
+    name: '個人資料',
+    link: '/profile'
+  },
+  {
+    id: 2,
+    name: '購物車',
+    link: '/cart'
+  }
+]
+const userOptionList = reactive<UserOption[]>(
+  userStore.userData.userName ? signInMenu : notSignInMenu
+)
 </script>
 
 <style scoped></style>

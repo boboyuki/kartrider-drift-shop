@@ -49,20 +49,26 @@
           </form>
         </CardContent>
         <CardFooter class="flex justify-center px-6 pb-6 gap-4">
-          <Button variant="outline" as-child>
-            <NuxtLink to="/">返回首頁</NuxtLink>
+          <Button variant="outline" as-child :disabled="isLoading">
+            <NuxtLink to="/">
+              <p>回首頁</p>
+              <Loader2 v-if="isLoading" class="w-4 h-4 ml-2 animate-spin" />
+            </NuxtLink>
           </Button>
-          <Button type="submit" @click="onSubmit"> 建立帳戶</Button>
+          <Button :disabled="isLoading" type="submit" @click="onSubmit">
+            <p>建立帳戶</p>
+            <Loader2 v-if="isLoading" class="w-4 h-4 ml-2 animate-spin" />
+          </Button>
         </CardFooter>
       </Card>
     </section>
   </NuxtLayout>
 </template>
-
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import zod from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
+import { Loader2 } from 'lucide-vue-next'
 import {
   Card,
   CardContent,
@@ -74,6 +80,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { ROUTE } from '@/constants/route'
+const router = useRouter()
 const schema = zod.object({
   name: zod.string().min(2).max(10),
   email: zod.string().email(),
@@ -89,23 +97,32 @@ const [name, nameAttrs] = defineField('name')
 const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 
-const isLoading = ref<boolean>(true)
+const isLoading = ref<boolean>(false)
 
 const onSubmit = handleSubmit(async () => {
   try {
     if (email.value && password.value && name.value) {
       isLoading.value = true
-      await userStore.signup({
+      const { error } = await userStore.signup({
         email: email.value,
         password: password.value,
         name: name.value
       })
       isLoading.value = false
-      toast({
-        title: '建立帳戶成功',
-        description: '歡迎加入',
-        variant: 'default'
-      })
+      if (!error) {
+        toast({
+          title: '建立帳戶成功',
+          description: '歡迎加入',
+          variant: 'default'
+        })
+        router.push(ROUTE.SIGN_IN)
+      } else {
+        toast({
+          title: '建立失敗',
+          description: error instanceof Error ? error.message : String(error),
+          variant: 'destructive'
+        })
+      }
     }
   } catch (error) {
     toast({

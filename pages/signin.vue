@@ -40,7 +40,7 @@
           <Button variant="outline" as-child>
             <NuxtLink to="/">返回首頁</NuxtLink>
           </Button>
-          <Button type="submit">登入</Button>
+          <Button type="submit" @click="onSubmit">登入</Button>
         </CardFooter>
       </Card>
     </section>
@@ -62,11 +62,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { ROUTE } from '@/constants/route'
 const schema = zod.object({
   email: zod.string().email(),
   password: zod.string().min(6).max(10)
 })
-
+const router = useRouter()
 const { toast } = useToast()
 const userStore = useUserStore()
 const { errors, defineField, handleSubmit } = useForm({
@@ -79,12 +80,24 @@ const [password, passwordAttrs] = defineField('password')
 const onSubmit = handleSubmit(async () => {
   try {
     if (email.value && password.value) {
-      await userStore.login({ email: email.value, password: password.value })
-      toast({
-        title: '登入成功',
-        description: '歡迎回來',
-        variant: 'default'
+      const { error } = await userStore.login({
+        email: email.value,
+        password: password.value
       })
+      if (!error) {
+        toast({
+          title: '登入成功',
+          description: '歡迎回來',
+          variant: 'default'
+        })
+        router.push(ROUTE.HOME)
+      } else {
+        toast({
+          title: '登入失敗',
+          description: error instanceof Error ? error.message : String(error),
+          variant: 'destructive'
+        })
+      }
     }
   } catch (error) {
     toast({
