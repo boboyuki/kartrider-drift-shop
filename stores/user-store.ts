@@ -35,7 +35,6 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const initialize = () => {
-    console.log('initialize', user.value, session.value)
     if (user.value || session.value) {
       userData.userName = user.value?.email || ''
       userData.userSession = session?.value?.access_token || ''

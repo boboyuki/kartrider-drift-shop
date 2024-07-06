@@ -5,7 +5,7 @@ import {
   type DialogDescriptionProps,
   useForwardProps
 } from 'radix-vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/cn'
 
 const props = defineProps<
   DialogDescriptionProps & { class?: HTMLAttributes['class'] }

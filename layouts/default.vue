@@ -1,13 +1,16 @@
 <template>
   <div class="flex flex-col h-screen w-100">
-    <LayoutDefaultHeader></LayoutDefaultHeader>
+    <Header></Header>
     <div class="flex-grow bg-zinc-900">
       <slot />
     </div>
-    <LayoutDefaultFooter></LayoutDefaultFooter>
+    <Footer></Footer>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Header from '@/components/header/Header.vue'
+import Footer from '@/components/footer/Footer.vue'
+</script>
 
 <style scoped></style>
